@@ -40,9 +40,9 @@
 					<div class = "sub-name">Логин:</div>
 					<input name="_login" type="text" placeholder="" onkeypress="return PressToEnter(event)"/>
 					<div class = "sub-name">Пароль:</div>
-					<input name="_password" type="password" placeholder="" onkeypress="return PressToEnter(event)"/>
+					<input name="_password" type="text" placeholder="" onkeypress="return PressToEnter(event)"/>
 					<div class = "sub-name">Повторите пароль:</div>
-					<input name="_passwordCopy" type="password" placeholder="" onkeypress="return PressToEnter(event)"/>
+					<input name="_passwordCopy" type="text" placeholder="" onkeypress="return PressToEnter(event)"/>
 					
 					<a href="login.php">Вернуться</a>
 					<input type="button" class="button" value="Зайти" onclick="RegIn()" style="margin-top: 0px;"/>
@@ -66,8 +66,20 @@
 				var _password = document.getElementsByName("_password")[0].value;
 				var _passwordCopy = document.getElementsByName("_passwordCopy")[0].value;
 				
-				if(_login != "") {
-					if(_password != "") {
+				if(_login == ""){
+					alert("Введите логин");
+					return;
+				}
+				if(_password == ""){
+					alert("Введите пароль");
+					return;
+				}
+
+				if(CheckPassword(_password) == false){
+					alert("Пароль не соотвествует требованиям");
+					return;
+				}
+
 						if(_password == _passwordCopy) {
 							loading.style.display = "block";
 							button.className = "button_diactive";
@@ -108,9 +120,12 @@
 								}
 							});
 						} else alert("Пароли не совподают.");
-					} else alert("Введите пароль.");
-				} else alert("Введите логин.");
-			}
+					}
+
+					function CheckPassword(value){
+						let regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,}$/;
+						return regex.test(value);
+					}
 			
 			function PressToEnter(e) {
 				if (e.keyCode == 13) {
