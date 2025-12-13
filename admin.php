@@ -1,18 +1,28 @@
 <?php
-	session_start();
-	include("./settings/connect_datebase.php");
-	
-	if (isset($_SESSION['user'])) {
-		if($_SESSION['user'] != -1) {
-			$user_query = $mysqli->query("SELECT * FROM `users` WHERE `id` = ".$_SESSION['user']); // проверяем
-			while($user_read = $user_query->fetch_row()) {
-				if($user_read[3] == 0) header("Location: index.php");
-			}
-		} else header("Location: login.php");
- 	} else {
-		header("Location: login.php");
-		echo "Пользователя не существует";
-	}
+session_start();
+include("./settings/connect_datebase.php");
+include("./check_session.php");
+
+//проверяем активную сессию
+if(!checkActiveSession($mysqli)) {
+    logoutUser($mysqli);
+    header("Location: login.php");
+    exit();
+}
+
+//проверяем роль пользователя
+$user_query = $mysqli->query("SELECT `roll` FROM `users` WHERE `id` = ".$_SESSION['user']);
+$user_read = $user_query->fetch_assoc();
+
+//если не админ - перенаправляем
+if($user_read['roll'] != 1) {
+    if($user_read['roll'] == 0) {
+        header("Location: user.php");
+    } else {
+        header("Location: index.php");
+    }
+    exit();
+}
 ?>
 <!DOCTYPE HTML>
 <html>

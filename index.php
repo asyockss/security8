@@ -1,6 +1,25 @@
 <?php
-	session_start();
-	include("./settings/connect_datebase.php");
+session_start();
+include("./settings/connect_datebase.php");
+include("./check_session.php");
+
+//если пользователь авторизован, проверяем его сессию
+if (isset($_SESSION['user'])) {
+    if(!checkActiveSession($mysqli)) {
+        logoutUser($mysqli);
+        header("Location: login.php");
+        exit();
+    }
+    
+    $user_query = $mysqli->query("SELECT `roll` FROM `users` WHERE `id` = ".$_SESSION['user']);
+    $user_read = $user_query->fetch_assoc();
+    
+    //если админ - перенаправляем
+    if($user_read['roll'] == 1) {
+        header("Location: admin.php");
+        exit();
+    }
+}
 ?>
 <!DOCTYPE HTML>
 <html>

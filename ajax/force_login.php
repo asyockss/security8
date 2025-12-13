@@ -14,20 +14,8 @@ if($query_user->num_rows == 1) {
     $user_read = $query_user->fetch_assoc();
     
     if(password_verify($password, $user_read['password'])){
-        //есть ли активная сессия у пользователя
-        $current_time = time();
-        $last_activity_time = 0;
-        
-        if(!empty($user_read['last_activity'])) {
-            $last_activity_time = strtotime($user_read['last_activity']);
-        }
-        
-        //если была активность в последние 30 минут, считаем сессию активной
-        if(!empty($user_read['session_token']) && ($current_time - $last_activity_time) < 1800) {
-            //есть активная сессия - возвращаем специальный код
-            echo "already_logged_in";
-            exit();
-        }
+        //очищаем предыдущую сессию
+        $mysqli->query("UPDATE `users` SET `session_token` = NULL, `last_activity` = NULL WHERE `id` = {$user_read['id']}");
         
         //генерация кода
         $code = sprintf("%06d", random_int(0, 999999));
@@ -39,9 +27,10 @@ if($query_user->num_rows == 1) {
         $_SESSION['login_email'] = $login;
         
         //отправка email с кодом
-        $subject = 'Код подтверждения авторизации';
+        $subject = 'Код подтверждения авторизации (новая сессия)';
         $message = 'Ваш код для авторизации: ' . $code . "\r\n";
-        $message .= 'Код действителен в течение 10 минут.';
+        $message .= 'Код действителен в течение 10 минут.' . "\r\n";
+        $message .= 'Внимание! Предыдущая сессия была завершена.';
         $headers = 'From: nastya28042020@yandex.ru' . "\r\n" .
                    'Reply-To: nastya28042020@yandex.ru' . "\r\n" .
                    'Content-Type: text/plain; charset=utf-8' . "\r\n" .
