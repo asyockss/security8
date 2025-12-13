@@ -4,6 +4,7 @@ include("../settings/connect_datebase.php");
 
 $login = $_POST['login'];
 $password = $_POST['password'];
+$force = isset($_POST['force']) && $_POST['force'] == 'true';
 
 $login = $mysqli->real_escape_string($login);
 
@@ -14,19 +15,25 @@ if($query_user->num_rows == 1) {
     $user_read = $query_user->fetch_assoc();
     
     if(password_verify($password, $user_read['password'])){
-        //есть ли активная сессия у пользователя
-        $current_time = time();
-        $last_activity_time = 0;
         
-        if(!empty($user_read['last_activity'])) {
-            $last_activity_time = strtotime($user_read['last_activity']);
-        }
-        
-        //если была активность в последние 30 минут, считаем сессию активной
-        if(!empty($user_read['session_token']) && ($current_time - $last_activity_time) < 1800) {
-            //есть активная сессия - возвращаем специальный код
-            echo "already_logged_in";
-            exit();
+        if($force) {
+            //очищаем предыдущую сессию при принудительном входе
+            $mysqli->query("UPDATE `users` SET `session_token` = NULL, `last_activity` = NULL WHERE `id` = {$user_read['id']}");
+        } else {
+            //проверяем активную сессию
+            $current_time = time();
+            $last_activity_time = 0;
+            
+            if(!empty($user_read['last_activity'])) {
+                $last_activity_time = strtotime($user_read['last_activity']);
+            }
+            
+            //если была активность в последние 30 минут, считаем сессию активной
+            if(!empty($user_read['session_token']) && ($current_time - $last_activity_time) < 1800) {
+                //есть активная сессия
+                echo "already_logged_in";
+                exit();
+            }
         }
         
         //генерация кода

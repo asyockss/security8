@@ -154,21 +154,38 @@ if (isset($_SESSION['user'])) {
 					dataType: 'html',
 					processData: false,
 					contentType: false,
-					success: function (_data) {
-						console.log("Ответ сервера: " + _data);
-						
-						if(_data == "code_sent") {
-							window.location.href = "verify_code.php";
-						} else if(_data == "error") {
-							loading.style.display = "none";
-							button.className = "button";
-							alert("Ошибка принудительного входа.");
-						} else {
-							loading.style.display = "none";
-							button.className = "button";
-							alert("Неизвестная ошибка.");
-						}
-					},
+					success: function (response) {
+					loading.style.display = 'none';
+					
+					if(response == "redirect_user") {
+						window.location.href = 'user.php';
+					} else if(response == "redirect_admin") {
+						window.location.href = 'admin.php';
+					} else if(response == "redirect_index") {
+						window.location.href = 'index.php';
+					} else if(response == "invalid") {
+						errorDiv.innerText = 'Неверный код';
+						errorDiv.style.display = 'block';
+						document.getElementById('code').value = '';
+						document.getElementById('code').focus();
+					} else if(response == "expired") {
+						errorDiv.innerText = 'Время действия кода истекло. Запросите новый код.';
+						errorDiv.style.display = 'block';
+					} else if(response == "session_expired") {
+						errorDiv.innerText = 'Сессия истекла. Пожалуйста, войдите снова.';
+						errorDiv.style.display = 'block';
+						setTimeout(function() {
+							window.location.href = 'login.php';
+						}, 2000);
+					} else if(response == "password_expired") {
+						window.location.href = 'change_password.php';
+					} else if(response == "location_check_required") {
+						window.location.href = 'verify_location.php';
+					} else {
+						errorDiv.innerText = 'Ошибка: ' + response;
+						errorDiv.style.display = 'block';
+					}
+				},
 					error: function() {
 						loading.style.display = "none";
 						button.className = "button";
