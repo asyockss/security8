@@ -1,0 +1,8 @@
+UPDATE `users` SET 
+    `last_location_lat` = 55.7558,
+    `last_location_lon` = 37.6173,
+    `last_location_city` = 'Moscow',
+    `last_location_country` = 'Russia'
+WHERE `id` = 38;
+
+$2y$10$2VaRRDy4T11njeCWmVEXPOqYFAUKfyw6B2Nn57lCM/TN/EcCm8qUm

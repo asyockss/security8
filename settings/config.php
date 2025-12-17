@@ -5,14 +5,11 @@ if (!defined('PASSWORD_EXPIRE_DAYS')) {
 }
 
 if (!defined('LOCATION_CHECK_DISTANCE_KM')) {
-    define('LOCATION_CHECK_DISTANCE_KM', 100);
-}
-
-if (!defined('GEO_API_KEY')) {
-    define('GEO_API_KEY', ''); //API ключ для сервиса определения местоположения
+    define('LOCATION_CHECK_DISTANCE_KM', 100); // порог в км
 }
 
 if (!defined('SESSION_TIMEOUT')) {
-    define('SESSION_TIMEOUT', 1800);
+    define('SESSION_TIMEOUT', 1800); // 30 минут
 }
+
 ?>

@@ -27,13 +27,14 @@ function checkActiveSession($mysqli) {
             return false;
         }
         
-        //проверяем истечение пароля
+        //проверка истечения пароля
         include("./settings/config.php");
         $password_changed_time = strtotime($user_data['password_changed_at']);
         $days_since_change = floor(($current_time - $password_changed_time) / (60 * 60 * 24));
         
         if($days_since_change >= PASSWORD_EXPIRE_DAYS) {
             //пароль истек - разлогиниваем
+            logoutUser($mysqli);
             return false;
         }
         

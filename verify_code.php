@@ -197,34 +197,43 @@ $device_info = "$browser_info на $os_info";
                     processData: false,
                     contentType: false,
                     success: function (response) {
-                    loading.style.display = 'none';
-                    
-                    if(response == "redirect_user") {
-                        //авторизация успешна - сразу перенаправляем
-                        window.location.href = 'user.php';
-                    } else if(response == "redirect_admin") {
-                        window.location.href = 'admin.php';
-                    } else if(response == "redirect_index") {
-                        window.location.href = 'index.php';
-                    } else if(response == "invalid") {
-                        errorDiv.innerText = 'Неверный код';
-                        errorDiv.style.display = 'block';
-                        document.getElementById('code').value = '';
-                        document.getElementById('code').focus();
-                    } else if(response == "expired") {
-                        errorDiv.innerText = 'Время действия кода истекло. Запросите новый код.';
-                        errorDiv.style.display = 'block';
-                    } else if(response == "session_expired") {
-                        errorDiv.innerText = 'Сессия истекла. Пожалуйста, войдите снова.';
-                        errorDiv.style.display = 'block';
-                        setTimeout(function() {
-                            window.location.href = 'login.php';
-                        }, 2000);
-                    } else {
-                        errorDiv.innerText = 'Ошибка: ' + response;
-                        errorDiv.style.display = 'block';
-                    }
-                },
+                        loading.style.display = 'none';
+                        
+                        if(response == "redirect_user") {
+                            //авторизация успешна - сразу перенаправляем
+                            window.location.href = 'user.php';
+                        } else if(response == "redirect_admin") {
+                            window.location.href = 'admin.php';
+                        } else if(response == "redirect_index") {
+                            window.location.href = 'index.php';
+                        } else if(response == "location_check_required") {
+                            alert("Обнаружен вход с нового местоположения! Код подтверждения отправлен на вашу почту.");
+                            window.location.href = 'verify_location.php';
+                        } else if(response == "mail_error") {
+                            errorDiv.innerText = 'Ошибка отправки email. Попробуйте позже.';
+                            errorDiv.style.display = 'block';
+                        } else if(response == "password_expired") {
+                            alert("Ваш пароль истек. Необходимо сменить пароль.");
+                            window.location.href = 'change_password_page.php';
+                        } else if(response == "invalid") {
+                            errorDiv.innerText = 'Неверный код';
+                            errorDiv.style.display = 'block';
+                            document.getElementById('code').value = '';
+                            document.getElementById('code').focus();
+                        } else if(response == "expired") {
+                            errorDiv.innerText = 'Время действия кода истекло. Запросите новый код.';
+                            errorDiv.style.display = 'block';
+                        } else if(response == "session_expired") {
+                            errorDiv.innerText = 'Сессия истекла. Пожалуйста, войдите снова.';
+                            errorDiv.style.display = 'block';
+                            setTimeout(function() {
+                                window.location.href = 'login.php';
+                            }, 2000);
+                        } else {
+                            errorDiv.innerText = 'Ошибка: ' + response;
+                            errorDiv.style.display = 'block';
+                        }
+                    },
                     error: function() {
                         loading.style.display = 'none';
                         errorDiv.innerText = 'Системная ошибка';

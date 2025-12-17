@@ -1,11 +1,12 @@
 <?php
 session_start();
 include("./settings/connect_datebase.php");
+include("./settings/config.php");
 include("./check_session.php");
 
 //проверяем активную сессию
 if(!checkActiveSession($mysqli)) {
-    logout($mysqli);
+    logoutUser($mysqli);
     header("Location: login.php");
     exit();
 }
@@ -67,14 +68,25 @@ if($user_read['roll'] == 1) {
 					$changed_date = new DateTime($password_data['password_changed_at']);
 					$current_date = new DateTime();
 					$interval = $changed_date->diff($current_date);
-					$days_left = 1 - $interval->days; 
+					$days_left = PASSWORD_EXPIRE_DAYS - $interval->days;
 					
 					echo '<p><strong>Пароль изменен:</strong> ' . $password_data['password_changed_at'] . '</p>';
 					echo '<p><strong>Дней с момента изменения:</strong> ' . $interval->days . '</p>';
 					echo '<p><strong>До истечения пароля:</strong> ' . $days_left . ' дней</p>';
 					
-					if($days_left <= 7) {
+					if($days_left <= 3) {
 						echo '<p style="color: orange;"><strong>Внимание!</strong> Пароль скоро истечет. Рекомендуем сменить пароль.</p>';
+					}
+					
+					// Информация о местоположении
+					$location_info = $mysqli->query("SELECT `last_location_city`, `last_location_country`, `last_location_time` FROM `users` WHERE `id` = ".$_SESSION['user']);
+					$location_data = $location_info->fetch_assoc();
+					
+					if(!empty($location_data['last_location_city'])) {
+						echo '<p><strong>Последнее местоположение:</strong> ' . 
+							htmlspecialchars($location_data['last_location_city']) . ', ' . 
+							htmlspecialchars($location_data['last_location_country']) . 
+							' (обновлено: ' . $location_data['last_location_time'] . ')</p>';
 					}
 					?>
 				</div>

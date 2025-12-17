@@ -9,7 +9,7 @@ if(!isset($_SESSION['password_expired']) || !isset($_SESSION['temp_user_id'])) {
 
 $new_password = $_POST['new_password'];
 $confirm_password = $_POST['confirm_password'];
-$user_id = intval($_SESSION['temp_user_id']); //защита от SQL-инъекций
+$user_id = intval($_SESSION['temp_user_id']);
 
 //проверяем совпадение паролей
 if($new_password !== $confirm_password) {
